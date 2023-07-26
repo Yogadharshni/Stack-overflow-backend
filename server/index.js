@@ -1,31 +1,62 @@
-
-import cors from "cors";
-import { MongoClient } from "mongodb";
-import bcrypt from 'bcrypt';
-import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-dotenv.config()
 import express from "express";
-import userRoutes from './routes/users.js'
+import cors from "cors";
+import dotenv from "dotenv";
 
+import userRoutes from "./routes/users.js";
+import questionRoutes from "./routes/Questions.js";
+import answerRoutes from "./routes/Answers.js";
+import connectDB from "./connectMongoDb.js";
 
-
+dotenv.config();
+connectDB();
 const app = express();
-app.use('/user', userRoutes)
-app.use(cors())
-app.use(express.json())
+app.use(express.json({ limit: "30mb", extended: true }));
+app.use(express.urlencoded({ limit: "30mb", extended: true }));
+app.use(cors());
 
-const PORT = 4000;
+app.use('/', (req, res) => {
+    res.send("This is a stack overflow clone API")
+})
 
-const MONGO_URL = "mongodb+srv://Yogadharshni:omsai123@cluster0.ypavcjb.mongodb.net";
-const client = new MongoClient(MONGO_URL); // dial
-// Top level await
-await client.connect(); // call
-console.log("Mongo is connected !!!  ");
+app.use("/user", userRoutes);
+app.use("/questions", questionRoutes);
+app.use("/answer", answerRoutes);
 
+const PORT = process.env.PORT || 5000;
 
-app.get("/", function (request, response) {
-    response.send("Hello, This is a Stack overflow Clone !!");
+app.listen(PORT, () => {
+    console.log(`server running on port ${PORT}`);
 });
 
 
-app.listen(PORT, () => console.log(`The server started in: ${PORT} ✨✨`));
+// import cors from "cors";
+// // import { MongoClient } from "mongodb";
+// import bcrypt from 'bcrypt';
+// import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+// dotenv.config()
+// import express from "express";
+// import userRoutes from './routes/users.js'
+// import mongoose from "mongoose";
+
+
+
+// const app = express();
+// // dotenv.config();
+// // connectDB();
+// app.use(express.json({ limit: "30mb", extended: true }));
+// app.use(express.urlencoded({ limit: "30mb", extended: true }));
+// app.use(cors());
+// // app.use('/user', userRoutes)
+
+
+// app.get("/", function (request, response) {
+//     response.send("Hello, This is a Stack overflow Clone !!");
+// });
+
+// const PORT = process.env.PORT || 5000;
+
+// const CONNECTION_URL = "mongodb+srv://yogdharshni06:stackover-flow@stackover-flow.ghzmjvb.mongodb.net/?retryWrites=true&w=majority";
+
+// mongoose.connect(PORT, () => {
+//     console.log(`server running on port ${PORT}`);
+// });
